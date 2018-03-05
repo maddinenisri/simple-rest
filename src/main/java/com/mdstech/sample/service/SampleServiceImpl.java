@@ -22,7 +22,11 @@ public class SampleServiceImpl implements SampleService {
 
     @PostConstruct
     public void init() {
-        IntStream.range(1, 10000).forEach(i -> data.add(SampleVO.builder().id(i).name(String.format("test%d", i)).build()));
+        IntStream.range(1, 10100).forEach(i -> data.add(
+                SampleVO.builder()
+                .id(i)
+                .name(String.format("test%d", i))
+                .build()));
     }
 
     @Override
@@ -33,7 +37,8 @@ public class SampleServiceImpl implements SampleService {
     @Override
     public SampleContainerVO getPage(int page) {
         SampleContainerVO sampleContainerVO = new SampleContainerVO();
-        boolean nextChunk = (data.size() > page*maxChunkSize) ? true : false;
+        boolean nextChunk = (data.size() > (page+1)*maxChunkSize) ? true : false;
+        System.out.println(String.format("Size %d and %s", data.size(), page*maxChunkSize));
         if(nextChunk) {
             sampleContainerVO.setData(data.subList(page * maxChunkSize, ((page + 1) * maxChunkSize) - 1));
         }
