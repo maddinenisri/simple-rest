@@ -1,9 +1,14 @@
 package com.mdstech.sample.service;
 
-import com.mdstech.sample.vo.SampleContainerVO;
+import com.mdstech.sample.repository.SampleRepository;
 import com.mdstech.sample.vo.SampleVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,9 +25,12 @@ public class SampleServiceImpl implements SampleService {
     @Value("${maxchunk.size}")
     private Integer maxChunkSize;
 
+    @Autowired
+    private SampleRepository sampleRepository;
+
     @PostConstruct
     public void init() {
-        IntStream.range(1, 10100).forEach(i -> data.add(
+        IntStream.range(1, 10100).forEach(i -> sampleRepository.save(
                 SampleVO.builder()
                 .id(i)
                 .name(String.format("test%d", i))
@@ -31,21 +39,12 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public List<SampleVO> getAll() {
-        return data;
+        return sampleRepository.findAll();
     }
 
     @Override
-    public SampleContainerVO getPage(int page) {
-        SampleContainerVO sampleContainerVO = new SampleContainerVO();
-        boolean nextChunk = (data.size() > (page+1)*maxChunkSize) ? true : false;
-        System.out.println(String.format("Size %d and %s", data.size(), page*maxChunkSize));
-        if(nextChunk) {
-            sampleContainerVO.setData(data.subList(page * maxChunkSize, ((page + 1) * maxChunkSize) - 1));
-        }
-        else {
-            sampleContainerVO.setData(data.subList(page * maxChunkSize, data.size()));
-        }
-        sampleContainerVO.setNext(nextChunk);
-        return sampleContainerVO;
+    public Page<SampleVO> getPage(String name, int page) {
+        Pageable pageable = new PageRequest(page+1, maxChunkSize, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
+        return sampleRepository.findByNameContaining(name, pageable);
     }
 }

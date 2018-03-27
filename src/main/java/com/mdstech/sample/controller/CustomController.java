@@ -4,8 +4,10 @@ import com.mdstech.sample.service.SampleService;
 import com.mdstech.sample.vo.SampleContainerVO;
 import com.mdstech.sample.vo.SampleVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,14 +23,15 @@ public class CustomController {
         return sampleService.getAll();
     }
 
-    @GetMapping(path = "/api/page")
-    public SampleContainerVO getPage() {
-        return sampleService.getPage(0);
-    }
+    @GetMapping(path = "/api/page/{name}")
+    public List<SampleVO> getPage(@PathVariable("name") String name, @RequestParam(value = "page", required = false) Integer page) {
+        if(page == null) {
+            page = 0;
+        }
 
-    @GetMapping(path = "/api/page/{page}")
-    public SampleContainerVO getPage(@PathVariable("page") Integer page) {
-        return sampleService.getPage(page);
+        Page<SampleVO> pageData = sampleService.getPage(name, page);
+        System.out.println("------------"+ pageData.getTotalElements() +":"+ pageData.getTotalPages());
+        return sampleService.getPage(name, page).getContent();
     }
 
 }
