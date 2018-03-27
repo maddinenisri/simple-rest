@@ -24,14 +24,17 @@ public class CustomController {
     }
 
     @GetMapping(path = "/api/page/{name}")
-    public List<SampleVO> getPage(@PathVariable("name") String name, @RequestParam(value = "page", required = false) Integer page) {
+    public SampleContainerVO getPage(@PathVariable("name") String name, @RequestParam(value = "page", required = false) Integer page) {
         if(page == null) {
             page = 0;
         }
 
         Page<SampleVO> pageData = sampleService.getPage(name, page);
         System.out.println("------------"+ pageData.getTotalElements() +":"+ pageData.getTotalPages());
-        return sampleService.getPage(name, page).getContent();
+        SampleContainerVO sampleContainerVO = new SampleContainerVO();
+        sampleContainerVO.setData(pageData.getContent());
+        sampleContainerVO.setNext(!pageData.isLast());
+        return sampleContainerVO;
     }
 
 }
