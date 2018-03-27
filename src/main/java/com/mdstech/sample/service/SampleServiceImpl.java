@@ -44,7 +44,7 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public Page<SampleVO> getPage(String name, int page) {
-        Pageable pageable = new PageRequest(page+1, maxChunkSize, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
+        Pageable pageable = new PageRequest(page, maxChunkSize, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
         return sampleRepository.findByNameContaining(name, pageable);
     }
 }
