@@ -25,12 +25,15 @@ public class SampleServiceImpl implements SampleService {
     @Value("${maxchunk.size}")
     private Integer maxChunkSize;
 
+    @Value("${sample.records.size}")
+    private Integer maxRecords;
+
     @Autowired
     private SampleRepository sampleRepository;
 
     @PostConstruct
     public void init() {
-        IntStream.range(1, 10100).forEach(i -> sampleRepository.save(
+        IntStream.range(1, maxRecords).forEach(i -> sampleRepository.save(
                 SampleVO.builder()
                 .id(i)
                 .name(String.format("test%d", i))
