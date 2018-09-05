@@ -1,16 +1,18 @@
 package com.mdstech.sample.controller;
 
+import com.mdstech.sample.service.CounterService;
+import com.mdstech.sample.service.RateCalculator;
 import com.mdstech.sample.service.SampleService;
+import com.mdstech.sample.vo.Car;
 import com.mdstech.sample.vo.SampleContainerVO;
 import com.mdstech.sample.vo.SampleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -19,6 +21,12 @@ public class CustomController {
 
     @Autowired
     private SampleService sampleService;
+
+    @Autowired
+    private RateCalculator rateCalculator;
+
+    @Autowired
+    private CounterService counterService;
 
     @GetMapping(path = "/api/list")
     public List<SampleVO> getSampleList() {
@@ -39,4 +47,9 @@ public class CustomController {
         return sampleContainerVO;
     }
 
+    @PostMapping(path = "/api/rate")
+    public List<Car> getRate(@RequestBody List<Car> cars) {
+        log.info("Received request for rate calculation " + counterService.increment());
+        return rateCalculator.getRate(cars);
+    }
 }
