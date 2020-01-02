@@ -4,7 +4,7 @@ node {
     // Clean workspace before doing anything
     deleteDir()
     //Chekout pipeline repo
-    checkout scm
+    //checkout scm
 
     customPipeline {
         publish = false
